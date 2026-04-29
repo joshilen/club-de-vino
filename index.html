@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Un Viaje por Espa&ntilde;a</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--linen:#FAF0E6;--rojo:#AA151B;--oro:#F1BF00;--blanc:#FFFFFF;--ocre:#C9852E;--cream:#F5F0E8;--smoke:rgba(170,21,27,.06);--ink:#2A1810}
+*{box-sizing:border-box}
+.reveal-viewport{background:var(--linen)!important}
+.reveal{font-family:'DM Sans',sans-serif;color:var(--ink);font-size:20px}
+.reveal .slides section{background:transparent;padding:30px 40px;height:100%!important}
+.reveal h1,.reveal h2,.reveal h3,.reveal h4{font-family:'Playfair Display',serif;color:var(--rojo);text-transform:none;letter-spacing:-.01em;line-height:1.15}
+.reveal h1{font-size:3.2em;font-weight:900}.reveal h2{font-size:2em;font-weight:700}.reveal h3{font-size:1.2em;font-weight:600;color:var(--oro)}
+.reveal .slide-number{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--rojo);background:rgba(170,21,27,.06);padding:4px 10px;border-radius:10px}
+.rojigualda-rule{border:none;height:3px;background:linear-gradient(90deg,var(--rojo) 25%,var(--oro) 25%,var(--oro) 75%,var(--rojo) 75%);width:120px;margin:18px auto;border-radius:1px}
+.rojigualda-rule-wide{border:none;height:3px;background:linear-gradient(90deg,var(--rojo) 25%,var(--oro) 25%,var(--oro) 75%,var(--rojo) 75%);width:200px;margin:18px auto;border-radius:1px}
+/* Split layout */
+.split-slide{display:flex;align-items:stretch;gap:40px;text-align:left;height:600px}
+.split-slide .text-side{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.split-slide .image-side{flex:0 0 400px;display:flex;align-items:center;justify-content:center;height:600px}
+.split-slide .image-side img{height:100%;width:100%;border-radius:10px;box-shadow:0 8px 40px rgba(170,21,27,.12);object-fit:cover;display:block}
+/* Timeline */
+.timeline{text-align:left;max-width:520px;position:relative;padding-left:36px}
+.timeline::before{content:'';position:absolute;left:10px;top:5px;bottom:5px;width:2px;background:linear-gradient(to bottom,var(--rojo),var(--oro));border-radius:2px}
+.timeline-item{position:relative;margin-bottom:16px;padding-left:10px;font-size:.82em;line-height:1.6;color:var(--ink)}
+.timeline-item::before{content:'';position:absolute;left:-32px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--oro);box-shadow:0 0 6px rgba(241,191,0,.4)}
+.timeline-item strong{color:var(--rojo);font-weight:700}
+/* Wine cards */
+.wine-card{text-align:left;max-width:500px}
+.wine-name{font-family:'Playfair Display',serif;font-size:1.5em;color:var(--rojo);font-weight:700;margin-bottom:6px;line-height:1.2}
+.wine-region{font-family:'DM Sans',sans-serif;font-size:.8em;color:var(--ocre);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:4px 0 10px}
+.wine-detail{font-size:.78em;color:rgba(42,24,16,.75);margin:4px 0;line-height:1.5}
+.wine-classification{display:inline-block;background:var(--blanc);border:1.5px solid var(--oro);border-radius:5px;padding:3px 12px;font-size:.7em;color:var(--rojo);font-weight:600;margin:8px 0}
+.scores{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.score-badge{display:inline-flex;align-items:center;gap:5px;background:var(--rojo);border-radius:5px;padding:4px 10px;font-size:.65em;color:var(--blanc);font-weight:500}
+.score-badge.alt{background:var(--ocre)}
+.score-badge .score-num{font-weight:800;font-size:1.15em}
+.tasting-notes{font-style:italic;color:var(--ink);font-size:.78em;line-height:1.6;max-width:480px;margin:10px 0;padding:10px 16px;border-left:3px solid var(--oro);background:rgba(241,191,0,.08);border-radius:0 6px 6px 0}
+.aside-fr{font-size:.75em;color:rgba(42,24,16,.6);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(170,21,27,.2);max-width:480px}
+/* Stats */
+.stat-row{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin:18px 0}
+.stat-item{text-align:center}.stat-item .stat-num{font-family:'Playfair Display',serif;font-size:2em;color:var(--rojo);font-weight:700}
+.stat-item .stat-label{font-size:.7em;color:rgba(42,24,16,.5);text-transform:uppercase;letter-spacing:.12em;font-weight:500}
+/* Final slide */
+.final-wine-list{text-align:left;max-width:680px;margin:15px auto;font-size:.72em}
+.final-wine-list div{padding:6px 0;break-inside:avoid;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(241,191,0,.18)}
+.final-wine-list div:last-child{border-bottom:none}
+.region-hero{font-family:'Playfair Display',serif;font-weight:700;color:var(--rojo);letter-spacing:-.01em}
+/* Blind stage slides */
+.blind-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;height:100%}
+.blind-stage .stage-num{font-family:'Playfair Display',serif;font-size:5.5em;font-weight:900;color:var(--blanc);text-shadow:0 0 80px rgba(241,191,0,.25);line-height:1;margin:0}
+.blind-stage .stage-sub{font-family:'DM Sans',sans-serif;font-size:.85em;color:var(--oro);letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin-top:8px}
+.blind-stage .glass-num{font-family:'DM Sans',sans-serif;font-size:1em;color:rgba(255,255,255,.5);letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-top:20px}
+.blind-stage .stage-question{font-family:'Playfair Display',serif;font-size:7em;font-weight:900;color:rgba(241,191,0,.10);line-height:.8;margin-bottom:-15px}
+/* Animations */
+.reveal .slides section{transition:all .6s cubic-bezier(.23,1,.32,1)}
+.reveal .fragment{transition:all .5s cubic-bezier(.23,1,.32,1)}
+.reveal .fragment.fade-up{transform:translateY(16px)}.reveal .fragment.fade-up.visible{transform:translateY(0)}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.reveal section.present .wine-card{animation:fadeSlideIn .6s ease both}
+.reveal section.present .split-slide .image-side img{animation:fadeSlideIn .7s .15s ease both}
+/* Map sidebar */
+#tour-map-panel{position:fixed;left:0;top:0;width:30vw;height:100vh;z-index:10;background:var(--rojo);border-right:2px solid var(--oro);box-shadow:4px 0 30px rgba(0,0,0,.25)}
+#tour-map{width:100%;height:100%}
+.reveal-viewport{margin-left:30vw!important;width:70vw!important}
+#tour-map-panel .map-title{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:1000;font-family:'Playfair Display',serif;font-size:1em;font-weight:700;color:var(--oro);text-transform:uppercase;letter-spacing:.12em;text-shadow:0 2px 8px rgba(0,0,0,.5);background:rgba(170,21,27,.92);padding:7px 20px;border-radius:5px;border:1px solid rgba(241,191,0,.25);white-space:nowrap}
+#tour-map-panel .map-stage-label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:1000;font-family:'DM Sans',sans-serif;font-size:.72em;font-weight:600;color:var(--blanc);text-transform:uppercase;letter-spacing:.14em;background:rgba(170,21,27,.95);padding:8px 18px;border-radius:5px;border:1px solid rgba(241,191,0,.25);text-align:center;white-space:nowrap;transition:all .4s ease}
+.stage-marker{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;color:var(--rojo);background:var(--oro);border:2px solid rgba(241,191,0,.5);transition:all .4s ease;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.stage-marker.visited{background:var(--oro);border-color:var(--oro)}
+.stage-marker.active{background:var(--blanc);border-color:var(--blanc);color:var(--rojo);width:34px;height:34px;font-size:13px;box-shadow:0 0 20px rgba(255,255,255,.6),0 0 40px rgba(241,191,0,.3)}
+.stage-marker.hidden{background:transparent;color:transparent;border-color:transparent;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none}
+.leaflet-popup-content-wrapper{background:rgba(170,21,27,.95)!important;color:var(--blanc)!important;border-radius:6px!important;border:1px solid rgba(241,191,0,.35)!important;box-shadow:0 4px 20px rgba(0,0,0,.35)!important}
+.leaflet-popup-tip{background:rgba(170,21,27,.95)!important}
+.leaflet-popup-content{font-family:'DM Sans',sans-serif!important;font-size:12px!important;margin:8px 12px!important}
+.leaflet-control-zoom a{background:rgba(170,21,27,.9)!important;color:var(--oro)!important;border-color:rgba(241,191,0,.25)!important}
+.leaflet-control-attribution{display:none!important}
+/* Mobile */
+@media(max-width:768px){
+  #tour-map-panel{width:100vw;height:50vh;border-right:none;border-bottom:2px solid var(--oro)}
+  .reveal-viewport{margin-left:0!important;width:100vw!important;margin-top:50vh!important;height:50vh!important}
+  .reveal{font-size:18px}
+  .reveal .slides section{padding:12px 18px}
+  .reveal h1{font-size:2.2em}
+  .reveal h2{font-size:1.6em}
+  .split-slide{flex-direction:row;height:100%;gap:12px;align-items:stretch}
+  .split-slide .text-side{flex:1;min-width:0;text-align:left;overflow-y:auto}
+  .split-slide .image-side{flex:0 0 35%;height:auto}
+  .split-slide .image-side img{height:100%;width:100%;object-fit:cover}
+  .region-hero{font-size:1.4em!important}
+  .wine-name{font-size:1.3em}
+  .wine-detail{font-size:.85em}
+  .wine-classification{font-size:.75em}
+  .tasting-notes{max-width:100%;font-size:.85em}
+  .score-badge{font-size:.7em}
+  .timeline{max-width:100%}
+  .timeline-item{font-size:.88em}
+  .blind-stage .stage-num{font-size:3.5em}
+  .blind-stage .stage-question{font-size:4em}
+  .final-wine-list{max-width:100%!important;font-size:.68em!important}
+  .final-wine-list div{gap:8px}
+  .stat-row{gap:20px}
+}
+</style>
+</head>
+<body>
+<div id="tour-map-panel">
+  <div class="map-title">Un Viaje por Espa&ntilde;a</div>
+  <div id="tour-map"></div>
+  <div class="map-stage-label">El Viaje</div>
+</div>
+<div class="reveal">
+<div class="slides">
+
+<!-- SLIDE 0: Title -->
+<section>
+  <div class="split-slide">
+    <div class="text-side" style="text-align:center;">
+      <h1 style="font-size:3.5em;margin-bottom:0;">ESPA&Ntilde;A</h1>
+      <hr class="rojigualda-rule-wide">
+      <div style="font-family:'Playfair Display',serif;font-size:1.2em;font-style:italic;color:var(--ink);margin-top:12px;">Más vale tarde que nunca</div>
+      <div style="font-size:.75em;color:var(--ocre);margin-top:28px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;">Eleven gems from Iberia</div>
+    </div>
+    <div class="image-side">
+      <img src="img/siesta.png" alt="Spain at sunset">
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 1: La Espa&ntilde;a de Postal -->
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h2>La Espa&ntilde;a de Postal</h2>
+      <hr class="rojigualda-rule" style="margin:12px 0;">
+      <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.05em;color:var(--ocre);line-height:1.5;margin:10px 0;">&ldquo;Sangr&iacute;a. Sun. Tapas. A bloke with a West Ham Forever tattoo. Two euros for a glass of red.&rdquo;</p>
+      <p style="font-size:.85em;line-height:1.6;margin:10px 0;">The Spain on the postcard. The Spain of summer holidays and Costa del Sol. For most of the 20th century, this was Spain&rsquo;s <em>wine</em> reputation too. Generous, cheerful, inexpensive, drunk by the litre. <em>Vino de mesa.</em></p>
+      <p style="font-size:.85em;line-height:1.6;margin:10px 0;">Then about thirty years ago, a few things happened. People started taking the old vines seriously. Producers stopped trying to make Spanish wine taste French. Foreign critics noticed.</p>
+      <p style="font-size:.82em;color:rgba(42,24,16,.65);font-style:italic;margin:14px 0 0;">Tonight is not the Spain on the postcard.</p>
+    </div>
+    <div class="image-side">
+      <img src="img/costadelsol.webp" alt="Flamenco dancer">
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: Vu de Paris -->
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h2>Une Confession</h2>
+      <hr class="rojigualda-rule" style="margin:12px 0;">
+      <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:1em;color:var(--ocre);line-height:1.6;margin:10px 0;">&ldquo;I love French wine. I love Italian wine. Spain&hellip; I always looked down on Spain.&rdquo;</p>
+      <p style="font-size:.85em;line-height:1.6;margin:10px 0;">A confession before we begin: I love French wine. I love Italian wine almost as much. I love both expensively, uncritically, and to the slight detriment of my wallet.</p>
+      <p style="font-size:.85em;line-height:1.6;margin:10px 0;">Spain has, for most of my drinking life, been the country I quietly looked down on. The French invented the AOC. The Italians have more native grape varieties than the rest of Europe combined. Spain spent decades selling wine by the litre and pretending that was fine.</p>
+      <p style="font-size:.85em;line-height:1.6;margin:10px 0;">It wasn&rsquo;t fine. They&rsquo;ve been quietly fixing it. Tonight, reluctantly, I&rsquo;m here to say so.</p>
+    </div>
+    <div class="image-side">
+      <img src="img/franceitaly.png" alt="Paris cafe">
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: The Reality -->
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h2>Y Sin Embargo</h2>
+      <hr class="rojigualda-rule" style="margin:12px 0;">
+      <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:1em;color:var(--ocre);line-height:1.6;margin:10px 0;">&ldquo;More vines than France. Older vines than France. Grapes France doesn&rsquo;t have.&rdquo;</p>
+      <p style="font-size:.85em;line-height:1.6;margin:10px 0;">Spain has more land under vine than any country on earth. Many of its vines are ungrafted; phylloxera arrived late and missed several regions entirely. Hundreds of indigenous grapes nobody else grows.</p>
+      <div class="stat-row" style="justify-content:flex-start;">
+        <div class="stat-item"><div class="stat-num">~950k</div><div class="stat-label">hectares</div></div>
+        <div class="stat-item"><div class="stat-num">70+</div><div class="stat-label">DOs</div></div>
+        <div class="stat-item"><div class="stat-num">#1</div><div class="stat-label">vine area</div></div>
+      </div>
+      <p style="font-size:.82em;line-height:1.6;margin:10px 0;">The French make wine like architects. The Spanish make wine like cooks. By feel, by tradition, with whatever the vineyard happened to give them that year. Eleven wines tonight. Catalonia to the Canaries, Galicia to Andaluc&iacute;a. None of them French. All of them serious.</p>
+    </div>
+    <div class="image-side">
+      <img src="img/spanish-vineyard.jpg" alt="Spanish vineyard">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 1 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 1</div>
+    <div class="stage-sub">La Bienvenida</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #1</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 1</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Penedès, Corpinnat</div>
+      <div class="wine-card">
+        <div class="wine-name">Recaredo Subtil Brut Nature 2019</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Xarel&middot;lo</div>
+        <div class="wine-classification">Corpinnat &middot; Biodynamic &middot; Organic (CCPAE)</div>
+        <div class="scores">
+          <span class="score-badge alt">Hand-disgorged</span>
+          <span class="score-badge">Zero dosage</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Creamy texture, fine integrated bubbles. White fruits, white flowers, autolytic notes. Aged in old 300L oak.&rdquo;</div>
+        <div class="aside-fr">Don&rsquo;t call this cava. In 2019, Recaredo and a handful of other Pened&egrave;s estates walked out of the Cava DO because cava had become a supermarket category. Corpinnat is what they make instead. Hand-disgorged. Second fermentation with their own free-run must rather than cane sugar. The technique is borrowed from Champagne. Champagne, for the record, hasn&rsquo;t been hand-disgorging for decades.</div>
+      </div>
+    </div>
+    <div class="image-side" >
+      <img src="img/recaredo-subtil.png" alt="Recaredo Subtil">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 2 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 2</div>
+    <div class="stage-sub">El Aperitivo</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #2</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 2</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Somontano, Pyrenees Foothills</div>
+      <div class="wine-card">
+        <div class="wine-name">Pirineos Gew&uuml;rztraminer 2024</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Gew&uuml;rztraminer</div>
+        <div class="wine-classification">DO Somontano &middot; Arag&oacute;n</div>
+        <div class="scores">
+          <span class="score-badge alt">13% ABV</span>
+          <span class="score-badge">Pyrenees fruit</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Lychee, passion fruit, ripe peach. Rose petal and jasmine. A hint of spice. Surprisingly fresh for the variety.&rdquo;</div>
+        <div class="aside-fr">Gew&uuml;rztraminer in Spain is, frankly, an act of taxonomic mischief. Somontano sits on the Spanish side of the Pyrenees, but the climate is closer to Alsace than to Andalusia. Cool nights, mountain altitude, granite-influenced soils. The grape behaves itself in a way it sometimes doesn&rsquo;t even in Alsace. The Spanish have no real ancestral claim to the variety. They just made it well anyway.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/pirineos-gewurztraminer.png" alt="Pirineos Gewurztraminer">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 3 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 3</div>
+    <div class="stage-sub">El Padrino del Verdejo</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #3</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 3</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Rueda, Castilla y Le&oacute;n</div>
+      <div class="wine-card">
+        <div class="wine-name">Martinsancho Verdejo 2024</div>
+        <div class="wine-detail"><strong>Producer:</strong> &Aacute;ngel Rodr&iacute;guez Vidal</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Verdejo &middot; bush vines, 40+ years</div>
+        <div class="wine-classification">DO Rueda &middot; Organic methods</div>
+        <div class="scores">
+          <span class="score-badge alt">Vineyard since 1784</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Straw yellow. Tropical and ripe fruit, mountain herb, a hint of fennel. Fresh, fruity, beautifully balanced.&rdquo;</div>
+        <div class="aside-fr">In the early 1970s, growers in Rueda were ripping out Verdejo to plant something, anything, more profitable. &Aacute;ngel Rodr&iacute;guez refused. His Martinsancho vineyard had been in the family since 1784, which is roughly when France was starting to take wine seriously. He replanted his other plots from cuttings. Today most Verdejo in Rueda traces back to those vines. A man saved an entire grape variety. France would have made a documentary about him. Spain made this wine.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/martinsancho-verdejo.png" alt="Martinsancho Verdejo">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 4 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 4</div>
+    <div class="stage-sub">El Volc&aacute;n</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #4</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 4</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Tenerife, Valle de la Orotava</div>
+      <div class="wine-card">
+        <div class="wine-name">Tajinaste List&aacute;n Blanco 2024</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 90% List&aacute;n Blanco, 10% Albillo</div>
+        <div class="wine-classification">DOP Islas Canarias &middot; Volcanic, ungrafted</div>
+        <div class="scores">
+          <span class="score-badge alt">Pico del Teide slopes</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Light straw with green reflections. Slightly smoky nose, floral, pineapple, apple, fennel. Fresh palate, balanced acidity.&rdquo;</div>
+        <div class="aside-fr">Phylloxera couldn&rsquo;t be bothered with the Canaries. The vines here are ungrafted, planted on volcanic ash, on the slopes of an active volcano, on the wrong side of the Atlantic. They&rsquo;re trained on a system called <em>cord&oacute;n trenzado</em>: three vines literally braided together, unique to these islands. France has, over the centuries, devised many sophisticated viticultural techniques. None of them involve plaiting.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/tajinaste-listan-blanco.png" alt="Tajinaste Listan Blanco">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 5 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 5</div>
+    <div class="stage-sub">El Atl&aacute;ntico</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #5</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 5</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">R&iacute;as Baixas, O Rosal, Galicia</div>
+      <div class="wine-card">
+        <div class="wine-name">Terras Gauda Cai&ntilde;o La Mar 2022</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 97% Cai&ntilde;o Blanco, 3% Albari&ntilde;o &amp; Loureiro</div>
+        <div class="wine-classification">DO R&iacute;as Baixas &middot; Organic, slate soils</div>
+        <div class="scores">
+          <span class="score-badge">Saved from extinction</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Peach, melon, pineapple, persimmon, lychee. Mineral and salty notes. Full-bodied yet delicate, deep, silky, with great structure.&rdquo;</div>
+        <div class="aside-fr">Everyone knows Albari&ntilde;o. Almost nobody knows Cai&ntilde;o Blanco, an heirloom Galician variety that Terras Gauda rescued from extinction. Grown on slate rather than the granite Galicia usually plays with, which is why La Mar tastes like the Atlantic in a way Albari&ntilde;o rarely manages. The total number of producers making wine from this grape is around twelve. None of them are French. Worth noting.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/terras-gauda-la-mar.png" alt="Terras Gauda La Mar">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 6 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 6</div>
+    <div class="stage-sub">La Naranja</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #6</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 6</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Ribera del Duero, Old Castile</div>
+      <div class="wine-card">
+        <div class="wine-name">Alfredo Maestro &ldquo;Lovamor&rdquo; Albillo 2023</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Albillo Mayor</div>
+        <div class="wine-detail"><strong>Style:</strong> Skin-contact orange</div>
+        <div class="wine-classification">Castilla y Le&oacute;n &middot; 60-120 yr old vines</div>
+        <div class="scores">
+          <span class="score-badge alt">Wild yeast</span>
+          <span class="score-badge">No additions</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Pear drop, banana, peach and apricot stone. Honeysuckle, white lilac. Orange tang and herbs. Texture, minerality, warm fruit.&rdquo;</div>
+        <div class="aside-fr">An orange wine from Ribera del Duero, a region built on serious Tempranillo, where this sort of thing is generally regarded as eccentric. Albillo Mayor is the local white grape, traditionally added in trace amounts to soften red blends. Alfredo Maestro takes it on its own. A week on the skins, wild yeast, nothing added, nothing removed. The French wine establishment is still locked in spirited debate about whether orange wine ought to exist. The Spanish appear to have moved on without them.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/alfredo-maestro-lovamor.png" alt="Alfredo Maestro Lovamor">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 7 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 7</div>
+    <div class="stage-sub">La Sierra</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #7</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 7</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Sierra de Gredos, Madrid</div>
+      <div class="wine-card">
+        <div class="wine-name">Comando G &ldquo;Rozas&rdquo; Tinto 2023</div>
+        <div class="wine-detail"><strong>Producers:</strong> Fernando Garc&iacute;a &amp; Dani Landi</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Garnacha &middot; 90 year old vines</div>
+        <div class="wine-classification">Vinos de Madrid &middot; Granite &middot; 900m altitude</div>
+        <div class="scores">
+          <span class="score-badge">Whole bunch</span>
+          <span class="score-badge alt">Foudre &amp; concrete</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Liveliness, lightness, the fruit of the Mediterranean harvest. Garnacha as Pinot Noir wishes it could be.&rdquo;</div>
+        <div class="aside-fr">Garnacha. Or, as they say in Ch&acirc;teauneuf, &ldquo;Grenache, which we obviously invented.&rdquo; The Spanish gave the French the grape. The French took it, put it on a French label, and quietly stopped mentioning where it came from. Then in 2008, Fernando Garc&iacute;a and Dani Landi started Comando G in the Sierra de Gredos. G for Garnacha, Granite, Gredos. Old vines at 900 metres, whole-bunch fermentation, glorious wines. Ch&acirc;teauneuf is now paying very polite, very nervous attention.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/comando-g-rozas.png" alt="Comando G Rozas">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 8 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 8</div>
+    <div class="stage-sub">La Rioja Moderna</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #8</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 8</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Rioja Alta, Villalba de Rioja</div>
+      <div class="wine-card">
+        <div class="wine-name">Pedrajo Sua&ntilde;&eacute; Tinto Reserva 2020</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Tempranillo</div>
+        <div class="wine-classification">Rioja DOCa &middot; B-Corp &middot; 24 months French oak</div>
+        <div class="scores">
+          <span class="score-badge alt">Concrete &amp; barrel</span>
+          <span class="score-badge">15+ months bottle</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Garnet red, dense and deep. Black fruit, plum stone, fig bread, subtle wood, liquorice. Fresh, silky tannin, long finish.&rdquo;</div>
+        <div class="aside-fr">&ldquo;Sua&ntilde;&eacute;&rdquo; is the Spanish phonetic spelling of the French <em>soign&eacute;</em>: refined, careful, well-tended. Two friends, Alberto Pedrajo and Javier Alonso, started this estate in 2013 with vineyards at the high northeast of Rioja Alta. They named their wine after a French word, aged it in French oak, and then proceeded to make a Tempranillo the French could not have made. Take it as flattery.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/pedrajo-suane-reserva.png" alt="Pedrajo Suane Reserva">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 9 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 9</div>
+    <div class="stage-sub">La Fuerza</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #9</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 9</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Priorat, Catalonia</div>
+      <div class="wine-card">
+        <div class="wine-name">Hodgkinson Garnacha Peluda 2019</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Garnacha Peluda</div>
+        <div class="wine-detail"><strong>Style:</strong> 18 months in 500L French oak</div>
+        <div class="wine-classification">DOQ Priorat &middot; Llicorella slate &middot; 1978 plot</div>
+        <div class="scores">
+          <span class="score-badge">Wild yeast</span>
+          <span class="score-badge alt">15.5% ABV</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Power and lift. The slate of Priorat carries through everything. Higher acidity than standard Garnacha. It&rsquo;s the &lsquo;peluda&rsquo; (hairy) variant.&rdquo;</div>
+        <div class="aside-fr">In the early 1970s, an English architect bought land in Priorat, back when Priorat was best known for not being Rioja. He married a French woman. Their son Luca did his oenology at Bordeaux, then worked harvests in Hermitage, Saint-&Eacute;milion, Tuscany, Stellenbosch, Porto, Mendoza, and Chile before coming home. Garnacha Peluda is the &ldquo;hairy&rdquo; mutation of Garnacha. Smaller berries, white fuzz under the leaves, higher acidity. The wine is unmistakably Priorat. The Bordeaux training shows. The slate does the rest.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/hodgkinson-priorat.png" alt="Hodgkinson Garnacha Peluda">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 10 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 10</div>
+    <div class="stage-sub">El Tiempo</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #10</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 10</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Rioja, Cuzcurrita</div>
+      <div class="wine-card">
+        <div class="wine-name">Urbina Gran Reserva Especial 2001</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 95% Tempranillo, 5% Mazuelo &amp; Graciano</div>
+        <div class="wine-classification">Rioja DOCa &middot; 24m American oak &middot; 48m bottle</div>
+        <div class="scores">
+          <span class="score-badge">24 years old</span>
+          <span class="score-badge alt">Family since 1870</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Black fruit, leather, tobacco. Layers of savoury blackcurrant. Velvet smoothness, great finesse, excellent length.&rdquo;</div>
+        <div class="aside-fr">Twenty-four years old. Bottled when nobody owned a smartphone and Spain still used pesetas, then held back at the bodega until they decided it was ready. The Urbinas have been making Rioja in Cuzcurrita since 1870. Five generations of refusing to sell wine before it&rsquo;s finished. Most Bordeaux estates abandoned this discipline three decades ago. The Spanish, true to form, never noticed they were supposed to.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/urbina-gran-reserva-2001.png" alt="Urbina Gran Reserva 2001">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; STAGE 11 &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div class="blind-stage">
+    <div class="stage-question">?</div>
+    <div class="stage-num">PARADA 11</div>
+    <div class="stage-sub">La Sobremesa</div>
+    <hr class="rojigualda-rule">
+    <div class="glass-num">Glass #11</div>
+  </div>
+</section>
+
+<section>
+  <div class="split-slide">
+    <div class="text-side">
+      <h3 style="margin:0;">PARADA 11</h3>
+      <div class="region-hero" style="font-size:1.8em;margin:4px 0 14px;">Jerez, Andaluc&iacute;a</div>
+      <div class="wine-card">
+        <div class="wine-name">Hidalgo Marqu&eacute;s de Rodil Palo Cortado</div>
+        <div class="wine-detail"><strong>Grapes:</strong> 100% Palomino</div>
+        <div class="wine-detail"><strong>Average age:</strong> 20+ years &middot; Solera since 1860</div>
+        <div class="wine-classification">DO Jerez &middot; Singular Wine, no added sulphites</div>
+        <div class="scores">
+          <span class="score-badge alt">17% ABV</span>
+          <span class="score-badge">5th gen family</span>
+        </div>
+        <div class="tasting-notes">&ldquo;Bright mahogany. Intense nutty nose, dry, salty, delicate yet rich. The savoury character of Amontillado with the power of Oloroso.&rdquo;</div>
+        <div class="aside-fr">Palo cortado is the unicorn of sherries. A barrel begins life as a fino, ageing under <em>flor</em>, the yeast veil that gives sherry its salt. Then, on certain barrels, for reasons no one fully understands, the flor dies. The cellar master tastes them, marks them with a single diagonal slash, and ages them oxidatively for another two decades. The wine in your glass is from a solera Hidalgo has been running since 1860. France has nothing comparable to sherry. The French have made their peace with this.</div>
+      </div>
+    </div>
+    <div class="image-side">
+      <img src="img/hidalgo-palo-cortado.png" alt="Hidalgo Marqu&eacute;s de Rodil Palo Cortado">
+    </div>
+  </div>
+</section>
+
+<!-- &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; FINAL &#9552;&#9552;&#9552;&#9552;&#9552;&#9552;&#9552; -->
+<section data-background-color="#AA151B">
+  <div style="color:var(--blanc);text-align:center;">
+    <h2 style="color:var(--oro);font-size:2.5em;">Viaje completo.</h2>
+    <hr class="rojigualda-rule-wide">
+    <div class="final-wine-list" style="color:var(--blanc);max-width:680px;">
+      <div><span><span style="color:var(--oro);font-weight:700;">1.</span> Recaredo Subtil Brut Nature 2019</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;52</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">2.</span> Pirineos Gew&uuml;rztraminer 2024</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;15</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">3.</span> Martinsancho Verdejo 2024</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;16</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">4.</span> Tajinaste List&aacute;n Blanco 2024</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;20</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">5.</span> Terras Gauda Cai&ntilde;o La Mar 2022</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;29</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">6.</span> Alfredo Maestro Lovamor 2023</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;22</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">7.</span> Comando G Rozas Tinto 2023</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;45</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">8.</span> Pedrajo Sua&ntilde;&eacute; Reserva 2020</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;35</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">9.</span> Hodgkinson Garnacha Peluda 2019</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;50</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">10.</span> Urbina Gran Reserva Especial 2001</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;41</span></div>
+      <div><span><span style="color:var(--oro);font-weight:700;">11.</span> Hidalgo Marqu&eacute;s de Rodil Palo Cortado</span><span style="white-space:nowrap;color:var(--oro);font-weight:700;">&pound;73</span></div>
+    </div>
+    <p style="font-size:1.3em;color:var(--oro);font-family:'Playfair Display',serif;font-weight:700;margin-top:24px;">Gracias, y salud.</p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// --- Tour Map ---
+const stages = [
+  {num:1,  name:'Penedès',         region:'Sant Sadurni d’Anoia',  lat:41.42, lng:1.79},
+  {num:2,  name:'Somontano',            region:'Pyrenees foothills',          lat:42.04, lng:0.13},
+  {num:3,  name:'Rueda',                region:'Castilla y León',        lat:41.40, lng:-4.92},
+  {num:4,  name:'Tenerife',             region:'Islas Canarias',              lat:28.40, lng:-16.52},
+  {num:5,  name:'Rías Baixas',     region:'O Rosal, Galicia',            lat:41.95, lng:-8.78},
+  {num:6,  name:'Ribera del Duero',     region:'Old Castile',                 lat:41.65, lng:-4.27},
+  {num:7,  name:'Sierra de Gredos',     region:'Madrid',                      lat:40.32, lng:-4.49},
+  {num:8,  name:'Rioja Alta',           region:'Villalba de Rioja',           lat:42.55, lng:-2.94},
+  {num:9,  name:'Priorat',              region:'Catalonia',                   lat:41.21, lng:0.79},
+  {num:10, name:'Rioja',                region:'Cuzcurrita',                  lat:42.61, lng:-2.93},
+  {num:11, name:'Jerez',                region:'Andalucía',              lat:36.69, lng:-6.14}
+];
+
+const map = L.map('tour-map', {
+  center: [40.0, -4.0],
+  zoom: 5,
+  zoomControl: true,
+  attributionControl: false,
+  scrollWheelZoom: false,
+  dragging: true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  maxZoom: 19
+}).addTo(map);
+
+const markers = [];
+const routeLines = [];
+
+stages.forEach(function(s) {
+  var icon = L.divIcon({
+    className: '',
+    html: '<div class="stage-marker hidden">' + s.num + '</div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+  var marker = L.marker([s.lat, s.lng], {icon: icon}).addTo(map);
+  marker.bindPopup(
+    '<div style="text-align:center;">' +
+    '<div style="color:#F1BF00;font-family:Playfair Display,serif;font-size:14px;font-weight:700;">Parada ' + s.num + '</div>' +
+    '<div style="color:#FFF;font-size:13px;margin-top:2px;">' + s.name + '</div>' +
+    '<div style="color:rgba(255,255,255,.6);font-size:11px;">' + s.region + '</div>' +
+    '</div>',
+    {closeButton: false, offset: [0, -8]}
+  );
+  markers.push(marker);
+});
+
+var revealedStages = {};
+
+function updateMap(slideIndex) {
+  var label = document.querySelector('.map-stage-label');
+
+  // Slides 0-3: intro (Title, Postal, Vu de Paris, Reality)
+  // Then groups of 2 per stage: blind(0), reveal(1)
+  // Final slide after all stages
+  if (slideIndex <= 3) {
+    markers.forEach(function(m) {
+      m.getElement().querySelector('.stage-marker').className = 'stage-marker hidden';
+      m.closePopup();
+    });
+    routeLines.forEach(function(l) { map.removeLayer(l); });
+    routeLines.length = 0;
+    map.flyTo([40.0, -4.0], 5, {duration: 1});
+    label.textContent = 'El Viaje';
+    return;
+  }
+
+  var finalSlide = 4 + (11 * 2); // slide 26
+  if (slideIndex >= finalSlide) {
+    for (var k = 1; k <= 11; k++) revealedStages[k] = true;
+    markers.forEach(function(m) {
+      m.getElement().querySelector('.stage-marker').className = 'stage-marker visited';
+    });
+    drawRouteAll();
+    map.flyTo([40.0, -4.0], 5, {duration: 1});
+    label.textContent = 'Viaje Completo';
+    return;
+  }
+
+  var groupIndex = slideIndex - 4;
+  var stageNum = Math.floor(groupIndex / 2) + 1;
+  var slideWithinStage = groupIndex % 2; // 0=blind, 1=reveal
+
+  if (slideWithinStage >= 1) {
+    revealedStages[stageNum] = true;
+  }
+
+  markers.forEach(function(m, i) {
+    var num = i + 1;
+    var el = m.getElement().querySelector('.stage-marker');
+    if (!revealedStages[num]) {
+      el.className = 'stage-marker hidden';
+      m.closePopup();
+    } else if (num === stageNum && slideWithinStage >= 1) {
+      el.className = 'stage-marker active';
+    } else {
+      el.className = 'stage-marker visited';
+      m.closePopup();
+    }
+  });
+
+  routeLines.forEach(function(l) { map.removeLayer(l); });
+  routeLines.length = 0;
+  var revArr = Object.keys(revealedStages).map(Number).sort(function(a,b){return a-b;});
+  for (var j = 0; j < revArr.length - 1; j++) {
+    var fromIdx = revArr[j] - 1, toIdx = revArr[j + 1] - 1;
+    var from = stages[fromIdx], to = stages[toIdx];
+    // Tenerife (index 3) is far away; dash that line
+    var isDashed = (fromIdx === 3 || toIdx === 3);
+    var line = L.polyline(
+      [[from.lat, from.lng], [to.lat, to.lng]],
+      {color: '#F1BF00', weight: 2.5, opacity: 0.7, dashArray: isDashed ? '8 6' : null}
+    ).addTo(map);
+    routeLines.push(line);
+  }
+
+  if (slideWithinStage === 0) {
+    map.flyTo([40.0, -4.0], 5, {duration: 1});
+    label.textContent = 'Parada ' + stageNum + ': ???';
+  } else {
+    var s = stages[stageNum - 1];
+    var zoom = (stageNum === 4) ? 6 : 7; // Tenerife slightly zoomed out
+    map.flyTo([s.lat, s.lng], zoom, {duration: 1.2});
+    markers[stageNum - 1].openPopup();
+    label.textContent = 'Parada ' + stageNum + ': ' + s.name;
+  }
+}
+
+function drawRouteAll() {
+  routeLines.forEach(function(l) { map.removeLayer(l); });
+  routeLines.length = 0;
+  for (var i = 0; i < stages.length - 1; i++) {
+    var from = stages[i], to = stages[i + 1];
+    var isDashed = (i === 2 || i === 3); // around Tenerife jump
+    var line = L.polyline(
+      [[from.lat, from.lng], [to.lat, to.lng]],
+      {color: '#F1BF00', weight: 2.5, opacity: 0.7, dashArray: isDashed ? '8 6' : null}
+    ).addTo(map);
+    routeLines.push(line);
+  }
+}
+
+// --- Reveal.js ---
+Reveal.initialize({
+  hash: true,
+  slideNumber: true,
+  transition: 'fade',
+  transitionSpeed: 'slow',
+  controls: true,
+  progress: true,
+  center: true,
+  width: 960,
+  height: 700,
+  margin: 0.08,
+  autoAnimateEasing: 'cubic-bezier(.23,1,.32,1)',
+  autoAnimateDuration: 0.9
+});
+
+Reveal.on('slidechanged', function(event) {
+  updateMap(event.indexh);
+});
+
+Reveal.on('ready', function() {
+  setTimeout(function() { map.invalidateSize(); }, 300);
+  updateMap(0);
+});
+</script>
+</body>
+</html>
